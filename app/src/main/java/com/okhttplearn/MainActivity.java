@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -15,6 +17,7 @@ import com.blankj.utilcode.constant.PermissionConstants;
 import com.blankj.utilcode.util.PermissionUtils;
 import com.okhttplearn.retrofit.RetrofitActivity;
 import com.okhttplearn.retrofitrxjava.RetrofitRxjavaActivity;
+import com.tencent.mmkv.MMKV;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,11 +38,32 @@ public class MainActivity extends AppCompatActivity {
     private TextView mAaa;
     private Button button;
     private Button button2;
+    Handler handler=new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        MMKV.initialize(this);
+
+
+        MMKV mMkv = MMKV.mmkvWithID("aaaa", MMKV.SINGLE_PROCESS_MODE);
+// 存储数据：
+        mMkv.encode("Stingid", "aaaa");
+        mMkv.encode("bool", true);
+        mMkv.encode("int", 123);
+
+        // 取数据：
+        String id = mMkv.decodeString("Stingid", null);
+        boolean bValue = mMkv.decodeBool("bool");
+        int iValue = mMkv.decodeInt("int");
+
+        Log.i(TAG, "onCreate: "+id+".."+bValue+".."+iValue);
 
         requestPermission();
         initView();
@@ -173,6 +197,8 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+//                Intent intent = new Intent(v.getContext(), MainActivity2.class);
+//                MainActivity.this.startActivity(intent);
                 startActivity(new Intent(MainActivity.this, RetrofitActivity.class));
             }
         });
